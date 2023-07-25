@@ -4,13 +4,13 @@ Ce projet consiste à créer un système de mesure du niveau d'eau dans une cuve
 
 ## Matériel nécessaire
 
-1. Arduino Nano
-2. Capteur à ultrasons JSN-SR04T
-3. Écran OLED I2C
-4. Boutons poussoirs
-5. Module d'horloge en temps réel DS3231
-6. Batterie ou panneau solaire
-7. Câbles de connexion, résistances, breadboard ou PCB, boîtier
+1. [Arduino Nano](https://fr.aliexpress.com/item/1005005857558580.html)
+2. [Capteur à ultrasons JSN-SR04T](https://fr.aliexpress.com/item/32665460264.html)
+3. [Écran OLED I2C](https://fr.aliexpress.com/item/1005005639243863.html)
+4. [Boutons poussoirs](https://fr.aliexpress.com/item/1005004066257419.html)
+5. [Module d'horloge en temps réel DS3231](https://fr.aliexpress.com/item/32822420722.html)
+6. [Batterie](https://fr.aliexpress.com/item/1005004524573100.html) ou [panneau solaire](https://fr.aliexpress.com/item/1005005373553931.html)
+7. [Câbles de connexion](https://fr.aliexpress.com/item/1005004611997111.html), résistances, breadboard ou PCB, boîtier
 
 ## Bibliothèques nécessaires
 
