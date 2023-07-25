@@ -12,6 +12,17 @@ Ce projet consiste à créer un système de mesure du niveau d'eau dans une cuve
 6. Batterie ou panneau solaire
 7. Câbles de connexion, résistances, breadboard ou PCB, boîtier
 
+## Bibliothèques nécessaires
+
+Pour ce projet, vous aurez besoin des bibliothèques suivantes :
+
+1.  [Adafruit SSD1306](https://github.com/adafruit/Adafruit_SSD1306) : pour l'écran OLED I2C.
+2.  [Adafruit GFX Library](https://github.com/adafruit/Adafruit-GFX-Library) : pour dessiner des formes et du texte sur l'écran OLED.
+3.  [RTClib](https://github.com/adafruit/RTClib) : pour le module d'horloge en temps réel DS3231.
+4.  [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home) : pour le capteur à ultrasons JSN-SR04T.
+
+Ces bibliothèques peuvent être installées via le gestionnaire de bibliothèques de l'IDE Arduino. Allez dans `Croquis > Inclure une bibliothèque > Gérer les bibliothèques...` et recherchez les noms des bibliothèques. Cliquez sur `Installer` pour chaque bibliothèque.
+
 ## Fonctionnalités
 
 1. Mesure du niveau d'eau
