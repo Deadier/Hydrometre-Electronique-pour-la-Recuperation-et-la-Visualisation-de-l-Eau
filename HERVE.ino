@@ -3,47 +3,64 @@
 #include <Adafruit_SSD1306.h>
 #include <DS3231.h>
 #include <NewPing.h>
+#include <math.h> // Bibliothèque pour utiliser la constante pi
 
+// Définition des dimensions de l'écran OLED
 #define SCREEN_WIDTH 128 // Largeur de l'écran OLED en pixels
 #define SCREEN_HEIGHT 64 // Hauteur de l'écran OLED en pixels
-#define OLED_RESET     -1 // Numéro de la broche de réinitialisation (ou -1 si elle partage la broche de réinitialisation de l'Arduino)
+#define OLED_RESET -1 // Numéro de la broche de réinitialisation (ou -1 si elle partage la broche de réinitialisation de l'Arduino)
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-DS3231 myRTC;
+DS3231 myRTC; // Objet pour le module d'horloge en temps réel
 
-#define TRIGGER_PIN  3  // Broche Arduino connectée à la broche de déclenchement du capteur à ultrasons
-#define ECHO_PIN     2  // Broche Arduino connectée à la broche d'écho du capteur à ultrasons
+// Définition des broches pour le capteur à ultrasons
+#define TRIGGER_PIN 3  // Broche Arduino connectée à la broche de déclenchement du capteur à ultrasons
+#define ECHO_PIN 2  // Broche Arduino connectée à la broche d'écho du capteur à ultrasons
 #define MAX_DISTANCE 200 // Distance maximale que nous voulons mesurer (en centimètres). La distance maximale du capteur est évaluée à 400-500cm
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // Configuration de NewPing avec les broches et la distance maximale
 
+// Définition des broches pour les boutons
 #define BUTTON1_PIN 4 // Broche Arduino connectée au bouton de réglage de l'heure et de la date
 #define BUTTON2_PIN 5 // Broche Arduino connectée au bouton de changement d'affichage
 #define BUTTON3_PIN 6 // Broche Arduino connectée au bouton de mesure immédiate du niveau d'eau
 
+// Énumération pour les différents modes de réglage de l'horloge
 enum Mode {MODE_NORMAL, MODE_SET_HOUR, MODE_SET_MINUTE, MODE_SET_DAY, MODE_SET_MONTH, MODE_SET_YEAR};
 Mode mode = MODE_NORMAL;
 
+// Variables pour le réglage de l'heure
 unsigned long lastButtonPressTime = 0;
 int setHour = 0, setMinute = 0, setDay = 1, setMonth = 1, setYear = 2013;
 
+// Variables pour la mesure de la distance
 unsigned long lastMeasurementTime = 0;
-#define MEASUREMENT_INTERVAL 12 * 60 * 60 * 1000 // 12 heures en millisecondes
+#define MEASUREMENT_INTERVAL 12 * 60 * 60 * 1000 // Intervalle de mesure en millisecondes (12 heures)
 
+// Structure pour stocker les mesures
 struct Measurement {
-  int distance;
-  int hour;
-  int minute;
-  int day;
-  int month;
-  int year;
+  int distance; // Distance mesurée
+  float volume; // Volume calculé
+  int hour, minute, day, month, year; // Date et heure de la mesure
 };
 
-Measurement measurements[10];
+Measurement measurements[10]; // Tableau pour stocker les 10 dernières mesures
 
+// Énumération pour les différents modes d'affichage
 enum DisplayMode {DISPLAY_VOLUME, DISPLAY_HISTORY, DISPLAY_TIME};
 DisplayMode displayMode = DISPLAY_VOLUME;
+
+// Constantes pour la cuve
+#define RADIUS_INTERIOR 1170 // Rayon intérieur de la cuve en mm
+#define HEIGHT_TRUNCATED 880 // Hauteur du segment tronqué intérieur en mm
+
+// Fonction pour calculer le volume en fonction de la distance mesurée
+float calculateVolume(int distance) {
+  float h = HEIGHT_TRUNCATED - distance * 10; // Conversion de la distance en hauteur d'eau en mm
+  if (h < 0) h = 0;
+  return (M_PI * h * h / 3) * (3 * RADIUS_INTERIOR - h) / 1000; // Formule pour le volume d'un segment sphérique en litres
+}
 
 void setup() {
   Serial.begin (9600); // Commencer la communication série à 9600 bauds
@@ -56,32 +73,35 @@ void setup() {
 }
 
 void loop() {
-  /* Mesurer la distance */
+  // Mesure de la distance si l'intervalle de mesure est écoulé ou si le bouton de mesure est pressé
   if (millis() - lastMeasurementTime >= MEASUREMENT_INTERVAL || (digitalRead(BUTTON3_PIN) == LOW && mode == MODE_NORMAL)) {
     lastMeasurementTime = millis();
     lastButtonPressTime = millis();
 
-    delay(50); // Attendre 50ms entre les pings (environ 20 pings/sec). 29ms devrait être le délai le plus court entre les pings
-    unsigned int uS = sonar.ping(); // Envoyer un ping, obtenir le temps du ping en microsecondes (uS)
-    int distance = uS / US_ROUNDTRIP_CM; // Convertir le temps du ping en distance en cm
+    delay(50); // Délai entre les pings
+    unsigned int uS = sonar.ping(); // Mesure du temps de ping en microsecondes
+    int distance = uS / US_ROUNDTRIP_CM; // Conversion du temps de ping en distance en cm
+    float volume = calculateVolume(distance); // Calcul du volume en litres
 
-    /* Envoyer la distance à l'ordinateur en utilisant le protocole Série */
-    Serial.println(distance);
+    Serial.println(distance); // Envoi de la distance à la console série
 
-    /* Afficher la distance sur l'OLED */
-    display.clearDisplay(); // Effacer l'affichage
-    display.setTextSize(1); // Définir la taille du texte
-    display.setTextColor(WHITE); // Définir la couleur du texte
-    display.setCursor(0,0); // Définir la position du curseur
-    display.println("Distance:"); // Afficher "Distance:"
-    display.println(distance); // Afficher la distance
-    display.display(); // Mettre à jour l'affichage
+    // Affichage de la distance et du volume sur l'écran OLED
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    display.println("Distance:");
+    display.println(distance);
+    display.println("Volume:");
+    display.println(volume);
+    display.display();
 
-    /* Stocker la mesure */
+    // Stockage de la mesure dans le tableau
     for (int i = 9; i > 0; i--) {
       measurements[i] = measurements[i-1];
     }
     measurements[0].distance = distance;
+    measurements[0].volume = volume;
     bool h12, PM_time, Century;
     measurements[0].hour = myRTC.getHour(h12, PM_time);
     measurements[0].minute = myRTC.getMinute();
@@ -90,7 +110,7 @@ void loop() {
     measurements[0].year = myRTC.getYear();
   }
 
-  /* Vérifier si le bouton de réglage de l'heure et de la date est pressé */
+  // Gestion du bouton de réglage de l'heure et de la date
   if (digitalRead(BUTTON1_PIN) == LOW) {
     lastButtonPressTime = millis();
     if (mode == MODE_NORMAL) {
@@ -114,11 +134,11 @@ void loop() {
           mode = MODE_SET_YEAR;
         } else if (mode == MODE_SET_YEAR) {
           mode = MODE_NORMAL;
-          myRTC.setHour(setHour); // Set the hour
-          myRTC.setMinute(setMinute); // Set the minute
-          myRTC.setDate(setDay); // Set the date
-          myRTC.setMonth(setMonth); // Set the month
-          myRTC.setYear(setYear); // Set the year
+          myRTC.setHour(setHour);
+          myRTC.setMinute(setMinute);
+          myRTC.setDate(setDay);
+          myRTC.setMonth(setMonth);
+          myRTC.setYear(setYear);
         }
       } else {
         if (mode == MODE_SET_HOUR) {
@@ -136,20 +156,20 @@ void loop() {
     }
   }
 
-  /* Vérifier si le bouton de changement d'affichage est pressé */
+  // Gestion du bouton de changement d'affichage
   if (digitalRead(BUTTON2_PIN) == LOW) {
     lastButtonPressTime = millis();
     displayMode = (DisplayMode)((displayMode + 1) % 3);
   }
 
-  /* Afficher les informations appropriées en fonction du mode d'affichage */
-  display.clearDisplay(); // Effacer l'affichage
-  display.setTextSize(1); // Définir la taille du texte
-  display.setTextColor(WHITE); // Définir la couleur du texte
-  display.setCursor(0,0); // Définir la position du curseur
+  // Affichage des informations en fonction du mode d'affichage
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
   if (displayMode == DISPLAY_VOLUME) {
     display.println("Volume:");
-    display.println(measurements[0].distance);
+    display.println(measurements[0].volume);
   } else if (displayMode == DISPLAY_HISTORY) {
     for (int i = 0; i < 10; i++) {
       display.print(measurements[i].distance);
@@ -176,9 +196,9 @@ void loop() {
     display.print(":");
     display.println(myRTC.getMinute());
   }
-  display.display(); // Mettre à jour l'affichage
+  display.display();
 
-  /* Éteindre l'écran OLED si aucun bouton n'a été pressé pendant une minute */
+  // Éteindre l'écran OLED si aucun bouton n'a été pressé pendant une minute
   if (millis() - lastButtonPressTime > 60000) {
     display.ssd1306_command(SSD1306_DISPLAYOFF);
   } else {
