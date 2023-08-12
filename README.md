@@ -6,16 +6,28 @@ Ce projet consiste à créer un système de mesure du niveau d'eau dans une cuve
 
 Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecociter ETY05000. Vous pouvez trouver la [fiche technique de la cuve sur le site d'Ecociter](https://www.plasteau.com/wp-content/uploads/2015/07/images_fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf). mais aussi sur [ce dépôt](https://github.com/Deadier/Hydrometre-Electronique-pour-la-Recuperation-et-la-Visualisation-de-l-Eau/blob/main/Fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf).
 
-### Dimensions de la Cuve ETY05000
+### Forme et Dimensions de la Cuve
 
--   **Forme de la cuve :** Sphérique
--   **Capacité :** 5000L
--   **Longueur :** 2351 mm
--   **Hauteur :** 2400 mm
--   **Profondeur de la cuve :** 750 mm
--   **Immersion maximale du fond dans l'eau :** 800 mm
+-   **Forme :** Sphère tronquée (forme intérieure identique à la forme extérieure)
+-   **Diamètre extérieur :** 2400 mm
+-   **Rayon extérieur :** 1200 mm
+-   **Hauteur totale de la sphère tronquée :** 1520 mm
+-   **Hauteur du segment tronqué :** 880 mm
+-   **Rayon du cercle à la base du segment tronqué extérieur :** Environ 678 mm
+-   **Épaisseur de la paroi :** 30 mm (avec marge de sécurité)
+-   **Rayon intérieur :** 1170 mm (rayon extérieur moins l'épaisseur de la paroi)
+-   **Rayon du cercle à la base du segment tronqué intérieur :** Environ 660 mm
+-   **Volume intérieur max :** 5000 L
+-   **Matériau :** Polyéthylène
 
-La forme sphérique de la cuve signifie que le volume d'eau en fonction de la hauteur d'eau n'est pas linéaire.
+
+### Calcul du Volume d'Eau en Fonction de la Hauteur de l'Eau
+Pour calculer le volume d'eau dans la cuve en fonction de la hauteur de l'eau (h), vous pouvez utiliser la formule suivante pour le volume d'un segment sphérique :
+
+    V_h = (π * h^2 / 3) * (3 * R_intérieur - h)
+
+où `R_intérieur` est le rayon intérieur de la cuve (1170 mm), et `h` est la hauteur de l'eau dans la cuve. Cette formule est valable pour `h` ≤ 880 mm, qui est la hauteur du segment tronqué intérieur.
+
 
 ## Matériel nécessaire
 
