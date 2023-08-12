@@ -2,6 +2,21 @@
 
 Ce projet consiste à créer un système de mesure du niveau d'eau dans une cuve à l'aide d'un Arduino Nano, d'un capteur à ultrasons JSN-SR04T et d'un écran OLED I2C. Le système sera alimenté par une batterie ou un panneau solaire et comprendra des fonctionnalités pour économiser l'énergie et prolonger la durée de vie de la batterie.
 
+## Cuve de récupération d'eau de pluie Ecociter ETY05000
+
+Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecociter ETY05000. Vous pouvez trouver la [fiche technique de la cuve sur le site d'Ecociter](https://www.plasteau.com/wp-content/uploads/2015/07/images_fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf). mais aussi sur [ce dépôt](https://github.com/Deadier/Hydrometre-Electronique-pour-la-Recuperation-et-la-Visualisation-de-l-Eau/blob/main/Fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf).
+
+### Dimensions de la Cuve ETY05000
+
+-   **Forme de la cuve :** Sphérique
+-   **Capacité :** 5000L
+-   **Longueur :** 2351 mm
+-   **Hauteur :** 2400 mm
+-   **Profondeur de la cuve :** 750 mm
+-   **Immersion maximale du fond dans l'eau :** 800 mm
+
+La forme sphérique de la cuve signifie que le volume d'eau en fonction de la hauteur d'eau n'est pas linéaire.
+
 ## Matériel nécessaire
 
 1. [Arduino Nano](https://fr.aliexpress.com/item/1005005857558580.html)
