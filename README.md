@@ -25,10 +25,10 @@ Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecocit
 Le volume d'eau dans la cuve est calculé en utilisant deux formules différentes en fonction de la hauteur de l'eau :
 
 1. **Si la hauteur de l'eau est inférieure à la hauteur du segment tronqué (h ≤ 880 mm)** :
-   ![Equation 1](url_de_l_image_1.png)
+   ![Equation 1](https://github.com/Deadier/Hydrometre-Electronique-pour-la-Recuperation-et-la-Visualisation-de-l-Eau/blob/main/CodeCogsEqn1.png)
 
 2. **Si la hauteur de l'eau est supérieure à la hauteur du segment tronqué (880 mm < h ≤ 1520 mm)** :
-   ![Equation 2](url_de_l_image_2.png)
+   ![Equation 2](https://github.com/Deadier/Hydrometre-Electronique-pour-la-Recuperation-et-la-Visualisation-de-l-Eau/blob/main/CodeCogsEqn2.png)
 
 où `R_intérieur` est le rayon intérieur de la cuve (1170 mm), et `h` est la hauteur de l'eau dans la cuve.
 
