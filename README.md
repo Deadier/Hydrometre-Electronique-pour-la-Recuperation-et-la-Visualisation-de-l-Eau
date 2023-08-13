@@ -22,11 +22,15 @@ Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecocit
 
 
 ### Calcul du Volume d'Eau en Fonction de la Hauteur de l'Eau
-Pour calculer le volume d'eau dans la cuve en fonction de la hauteur de l'eau (h), vous pouvez utiliser la formule suivante pour le volume d'un segment sphérique :
+Le volume d'eau dans la cuve est calculé en utilisant deux formules différentes en fonction de la hauteur de l'eau :
 
-    V_h = (π * h^2 / 3) * (3 * R_intérieur - h)
+1. **Si la hauteur de l'eau est inférieure à la hauteur du segment tronqué (h ≤ 880 mm)** :
+   ![Equation 1](url_de_l_image_1.png)
 
-où `R_intérieur` est le rayon intérieur de la cuve (1170 mm), et `h` est la hauteur de l'eau dans la cuve. Cette formule est valable pour `h` ≤ 880 mm, qui est la hauteur du segment tronqué intérieur.
+2. **Si la hauteur de l'eau est supérieure à la hauteur du segment tronqué (880 mm < h ≤ 1520 mm)** :
+   ![Equation 2](url_de_l_image_2.png)
+
+où `R_intérieur` est le rayon intérieur de la cuve (1170 mm), et `h` est la hauteur de l'eau dans la cuve.
 
 
 ## Matériel nécessaire
