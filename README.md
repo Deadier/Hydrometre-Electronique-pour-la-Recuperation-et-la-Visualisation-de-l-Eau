@@ -6,7 +6,7 @@ Ce projet consiste à créer un système de mesure du niveau d'eau dans une cuve
 
 Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecociter ETY05000. Vous pouvez trouver la [fiche technique de la cuve sur le site d'Ecociter](https://www.plasteau.com/wp-content/uploads/2015/07/images_fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf). mais aussi sur [ce dépôt](https://github.com/Deadier/Hydrometre-Electronique-pour-la-Recuperation-et-la-Visualisation-de-l-Eau/blob/main/Fiches_techniques_pdf_Jardin_Eco_citer_ETY05000.pdf).
 
-### Forme et Dimensions de la Cuve
+### Forme et dimensions de la cuve
 
 -   **Forme :** Sphère tronquée (forme intérieure identique à la forme extérieure)
 -   **Diamètre extérieur :** 2400 mm
@@ -21,7 +21,7 @@ Le système HERVE est conçu pour fonctionner avec la cuve d'eau de pluie Ecocit
 -   **Matériau :** Polyéthylène
 
 
-### Calcul du Volume d'Eau en Fonction de la Hauteur de l'Eau
+### Calcul du volume d'eau en fonction de la hauteur de l'eau
 Le volume d'eau dans la cuve est calculé en utilisant deux formules différentes en fonction de la hauteur de l'eau :
 
 1. **Si la hauteur de l'eau est inférieure à la hauteur du segment tronqué (h ≤ 880 mm)** :
