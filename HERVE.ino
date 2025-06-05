@@ -32,11 +32,16 @@ Mode mode = MODE_NORMAL;
 
 // Variables pour le réglage de l'heure
 unsigned long lastButtonPressTime = 0;
+int prevButton1State = HIGH;
+int prevButton2State = HIGH;
+int prevButton3State = HIGH;
+unsigned long button1PressStart = 0;
+bool button1LongPressHandled = false;
 int setHour = 0, setMinute = 0, setDay = 1, setMonth = 1, setYear = 2013;
 
 // Variables pour la mesure de la distance
 unsigned long lastMeasurementTime = 0;
-#define MEASUREMENT_INTERVAL 12 * 60 * 60 * 1000 // Intervalle de mesure en millisecondes (12 heures)
+#define MEASUREMENT_INTERVAL (12UL * 60UL * 60UL * 1000UL) // Intervalle de mesure en millisecondes (12 heures)
 
 // Structure pour stocker les mesures
 struct Measurement {
@@ -81,10 +86,18 @@ void setup() {
 }
 
 void loop() {
-  // Mesure de la distance si l'intervalle de mesure est écoulé ou si le bouton de mesure est pressé
-  if (millis() - lastMeasurementTime >= MEASUREMENT_INTERVAL || (digitalRead(BUTTON3_PIN) == LOW && mode == MODE_NORMAL)) {
+  int button1State = digitalRead(BUTTON1_PIN);
+  int button2State = digitalRead(BUTTON2_PIN);
+  int button3State = digitalRead(BUTTON3_PIN);
+
+  // Mesure de la distance si l'intervalle est écoulé ou si le bouton 3 vient d'
+  // être pressé
+  if (millis() - lastMeasurementTime >= MEASUREMENT_INTERVAL ||
+      (button3State == LOW && prevButton3State == HIGH && mode == MODE_NORMAL)) {
     lastMeasurementTime = millis();
-    lastButtonPressTime = millis();
+    if (button3State == LOW && prevButton3State == HIGH) {
+      lastButtonPressTime = millis();
+    }
 
     delay(50); // Délai entre les pings
     unsigned int uS = sonar.ping(); // Mesure du temps de ping en microsecondes
@@ -119,53 +132,83 @@ void loop() {
   }
 
   // Gestion du bouton de réglage de l'heure et de la date
-  if (digitalRead(BUTTON1_PIN) == LOW) {
+  if (button1State == LOW && prevButton1State == HIGH) {
+    button1PressStart = millis();
+    button1LongPressHandled = false;
+    lastButtonPressTime = millis();
+  }
+
+  if (button1State == LOW && !button1LongPressHandled &&
+      millis() - button1PressStart >= 10000) {
+    button1LongPressHandled = true;
     lastButtonPressTime = millis();
     if (mode == MODE_NORMAL) {
-      if (millis() - lastButtonPressTime > 10000) {
-        mode = MODE_SET_HOUR;
-        setHour = 0;
-        setMinute = 0;
-        setDay = 30;
-        setMonth = 10;
-        setYear = 2013;
-      }
+      mode = MODE_SET_HOUR;
+      setHour = 0;
+      setMinute = 0;
+      setDay = 30;
+      setMonth = 10;
+      setYear = 2013;
     } else {
-      if (millis() - lastButtonPressTime > 10000) {
-        if (mode == MODE_SET_HOUR) {
-          mode = MODE_SET_MINUTE;
-        } else if (mode == MODE_SET_MINUTE) {
-          mode = MODE_SET_DAY;
-        } else if (mode == MODE_SET_DAY) {
-          mode = MODE_SET_MONTH;
-        } else if (mode == MODE_SET_MONTH) {
-          mode = MODE_SET_YEAR;
-        } else if (mode == MODE_SET_YEAR) {
-          mode = MODE_NORMAL;
-          myRTC.setHour(setHour);
-          myRTC.setMinute(setMinute);
-          myRTC.setDate(setDay);
-          myRTC.setMonth(setMonth);
-          myRTC.setYear(setYear);
-        }
-      } else {
-        if (mode == MODE_SET_HOUR) {
-          setHour = (setHour % 24) + 1;
-        } else if (mode == MODE_SET_MINUTE) {
-          setMinute = (setMinute % 60) + 1;
-        } else if (mode == MODE_SET_DAY) {
-          setDay = (setDay % 31) + 1;
-        } else if (mode == MODE_SET_MONTH) {
-          setMonth = (setMonth % 12) + 1;
-        } else if (mode == MODE_SET_YEAR) {
-          setYear++;
-        }
+      if (mode == MODE_SET_HOUR) {
+        mode = MODE_SET_MINUTE;
+      } else if (mode == MODE_SET_MINUTE) {
+        mode = MODE_SET_DAY;
+      } else if (mode == MODE_SET_DAY) {
+        mode = MODE_SET_MONTH;
+      } else if (mode == MODE_SET_MONTH) {
+        mode = MODE_SET_YEAR;
+      } else if (mode == MODE_SET_YEAR) {
+        mode = MODE_NORMAL;
+        myRTC.setHour(setHour);
+        myRTC.setMinute(setMinute);
+        myRTC.setDate(setDay);
+        myRTC.setMonth(setMonth);
+        myRTC.setYear(setYear);
       }
     }
   }
 
+  if (button1State == HIGH && prevButton1State == LOW) {
+    unsigned long pressDuration = millis() - button1PressStart;
+    if (pressDuration < 10000) {
+      if (mode == MODE_SET_HOUR) {
+        setHour = (setHour % 24) + 1;
+      } else if (mode == MODE_SET_MINUTE) {
+        setMinute = (setMinute % 60) + 1;
+      } else if (mode == MODE_SET_DAY) {
+        setDay = (setDay % 31) + 1;
+      } else if (mode == MODE_SET_MONTH) {
+        setMonth = (setMonth % 12) + 1;
+      } else if (mode == MODE_SET_YEAR) {
+        setYear++;
+      }
+    }
+    lastButtonPressTime = millis();
+  }
+
+  if (mode != MODE_NORMAL && millis() - lastButtonPressTime >= 10000) {
+    lastButtonPressTime = millis();
+    if (mode == MODE_SET_HOUR) {
+      mode = MODE_SET_MINUTE;
+    } else if (mode == MODE_SET_MINUTE) {
+      mode = MODE_SET_DAY;
+    } else if (mode == MODE_SET_DAY) {
+      mode = MODE_SET_MONTH;
+    } else if (mode == MODE_SET_MONTH) {
+      mode = MODE_SET_YEAR;
+    } else if (mode == MODE_SET_YEAR) {
+      mode = MODE_NORMAL;
+      myRTC.setHour(setHour);
+      myRTC.setMinute(setMinute);
+      myRTC.setDate(setDay);
+      myRTC.setMonth(setMonth);
+      myRTC.setYear(setYear);
+    }
+  }
+
   // Gestion du bouton de changement d'affichage
-  if (digitalRead(BUTTON2_PIN) == LOW) {
+  if (button2State == LOW && prevButton2State == HIGH) {
     lastButtonPressTime = millis();
     displayMode = (DisplayMode)((displayMode + 1) % 3);
   }
@@ -212,4 +255,8 @@ void loop() {
   } else {
     display.ssd1306_command(SSD1306_DISPLAYON);
   }
+
+  prevButton1State = button1State;
+  prevButton2State = button2State;
+  prevButton3State = button3State;
 }

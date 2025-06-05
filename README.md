@@ -104,4 +104,4 @@ Le système dispose de trois boutons qui fonctionnent de la manière suivante :
 
 ## Licence
 
-Ce projet est sous licence MIT - voir le fichier `LICENSE.md` pour plus de détails.
+Ce projet est sous licence MIT - voir le fichier `LICENSE` pour plus de détails.
