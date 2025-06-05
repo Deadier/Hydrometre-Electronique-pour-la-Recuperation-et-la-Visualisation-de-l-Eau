@@ -56,24 +56,8 @@ Measurement measurements[10]; // Tableau pour stocker les 10 dernières mesures
 enum DisplayMode {DISPLAY_VOLUME, DISPLAY_HISTORY, DISPLAY_TIME};
 DisplayMode displayMode = DISPLAY_VOLUME;
 
-// Constantes pour la cuve
-#define RADIUS_INTERIOR 1170 // Rayon intérieur de la cuve en mm
-#define HEIGHT_TRUNCATED 880 // Hauteur du segment tronqué intérieur en mm
-#define HEIGHT_MAX 1520 // Hauteur maximale d'eau dans la cuve en mm
-#define SENSOR_HEIGHT 300 // Hauteur du capteur au-dessus du trop-plein d'eau en mm
-
-// Fonction pour calculer le volume en fonction de la distance mesurée
-float calculateVolume(int distance) {
-  float h = HEIGHT_MAX + SENSOR_HEIGHT - distance * 10; // Conversion de la distance en hauteur d'eau en mm
-  if (h < 0) h = 0;
-  if (h <= HEIGHT_TRUNCATED) {
-    return (M_PI * h * h / 3) * (3 * RADIUS_INTERIOR - h) / 1000; // Formule pour le volume d'un segment sphérique en litres
-  } else {
-    float h_truncated = HEIGHT_MAX - h;
-    return (4.0 / 3.0 * M_PI * RADIUS_INTERIOR * RADIUS_INTERIOR * RADIUS_INTERIOR
-            - M_PI * h_truncated * h_truncated / 3 * (3 * RADIUS_INTERIOR - h_truncated)) / 1000; // Formule pour le volume d'une sphère tronquée en litres
-  }
-}
+// Calcul du volume
+#include "src/volume.h"
 
 void setup() {
   Serial.begin (9600); // Commencer la communication série à 9600 bauds

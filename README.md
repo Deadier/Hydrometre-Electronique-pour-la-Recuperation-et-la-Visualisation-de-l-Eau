@@ -94,6 +94,19 @@ Voici comment vous pouvez connecter vos composants à l'Arduino Nano :
 4. Dans l'IDE Arduino, sélectionnez le bon port COM pour votre Arduino Nano.
 5. Téléchargez le code sur votre Arduino Nano.
 
+## Tests
+
+Une petite suite de tests unitaires vérifie la fonction `calculateVolume`. Les
+tests utilisent la bibliothèque [Catch2](https://github.com/catchorg/Catch2).
+
+### Compilation et exécution
+
+```bash
+sudo apt-get install catch2 g++
+g++ -std=c++17 tests/test_volume.cpp -I /usr/include/catch2 -lCatch2Main -lCatch2 -o tests/test_volume
+./tests/test_volume
+```
+
 ## Utilisation
 
 Le système dispose de trois boutons qui fonctionnent de la manière suivante :

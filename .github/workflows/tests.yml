@@ -1,0 +1,15 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y catch2 g++
+      - name: Build tests
+        run: g++ -std=c++17 tests/test_volume.cpp -I /usr/include/catch2 -lCatch2Main -lCatch2 -o tests/test_volume
+      - name: Run tests
+        run: ./tests/test_volume
